@@ -1,6 +1,9 @@
 package com.example.cobol.rozhodovac;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
@@ -54,6 +57,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.cobol.rozhodovac", Context.MODE_PRIVATE);
+
         // Načtení nebo vytvoření databáze
         databazeRozhodnuti = this.openOrCreateDatabase("Rozhodnuti", MODE_PRIVATE, null);
 
@@ -71,14 +76,14 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-
-                Log.i("muj_position: ",String.valueOf(position));
-
+                /*
                 Intent intent = new Intent (getApplicationContext(), NoteEditorActivity.class);
-
                 intent.putExtra("noteId", poradi.get(position));
+                */
 
-                //Log.i("arr: ", Arrays.toString(poradi.toArray()));
+                Intent intent = new Intent (getApplicationContext(), DetailActivity.class);
+                intent.putExtra("noteId", poradi.get(position));
+                intent.putExtra("nazev", notes.get(position));
 
                 startActivity(intent);
 
@@ -107,8 +112,12 @@ public class MainActivity extends AppCompatActivity {
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getApplicationContext(),NoteEditorActivity.class);
+
+                Intent intent = new Intent(getApplicationContext(),DetailActivity.class);
                 startActivity(intent);
+
+                /*Intent intent = new Intent(getApplicationContext(),NoteEditorActivity.class);
+                startActivity(intent);*/
             }
         });
     }
@@ -139,8 +148,8 @@ public class MainActivity extends AppCompatActivity {
         poradi.clear();
 
         while (c != null){
-            // Ukládá číslo záznamu a jméno do notes
-            notes.add(c.getInt(rowidIndex) + ": " + c.getString(nazevIndex));
+            // Ukládá jméno do notes
+            notes.add(c.getString(nazevIndex));
 
             // Ukládá číslo záznamu do poradi
             poradi.add(c.getInt(rowidIndex));
