@@ -1,15 +1,10 @@
 package com.example.cobol.rozhodovac;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,7 +16,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,11 +35,28 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         super.onOptionsItemSelected(item);
 
-        if(item.getItemId() == R.id.add_note){
+        // Spíš sem dám switch ;)
 
-            Intent intent = new Intent(getApplicationContext(),NoteEditorActivity.class);
+        if(item.getItemId() == R.id.smazat_vse){
 
-            startActivity(intent);
+            try {
+
+                MainActivity.databazeRozhodnuti.execSQL("DROP TABLE IF EXISTS srovnani");
+                MainActivity.databazeRozhodnuti.execSQL("DROP TABLE IF EXISTS vlastnosti");
+                MainActivity.databazeRozhodnuti.execSQL("DROP TABLE IF EXISTS rozhodnuti");
+                MainActivity.databazeRozhodnuti.execSQL("DROP TABLE IF EXISTS polozky");
+
+                notes.clear();
+                poradi.clear();
+
+                arrayAdapter.notifyDataSetChanged();
+
+                vytvoreniDatabazi();
+
+            } catch (Exception e){
+                e.printStackTrace();
+            }
+
 
             return true;
         }
@@ -57,10 +68,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.cobol.rozhodovac", Context.MODE_PRIVATE);
+        //SharedPreferences sharedPreferences = this.getSharedPreferences("com.example.cobol.rozhodovac", Context.MODE_PRIVATE);
 
         // Načtení nebo vytvoření databáze
         databazeRozhodnuti = this.openOrCreateDatabase("Rozhodnuti", MODE_PRIVATE, null);
+
+        vytvoreniDatabazi();
 
         //tady se to bude volat
         nacteniDatabaze();
@@ -76,18 +89,12 @@ public class MainActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick (AdapterView<?> parent, View view, int position, long id) {
-                /*
-                Intent intent = new Intent (getApplicationContext(), NoteEditorActivity.class);
-                intent.putExtra("noteId", poradi.get(position));
-                */
 
                 Intent intent = new Intent (getApplicationContext(), DetailActivity.class);
                 intent.putExtra("noteId", poradi.get(position));
                 intent.putExtra("nazev", notes.get(position));
 
                 startActivity(intent);
-
-
             }
         });
 
@@ -113,11 +120,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                Intent intent = new Intent(getApplicationContext(),DetailActivity.class);
+                Intent intent = new Intent(getApplicationContext(),NoteEditorActivity.class);
                 startActivity(intent);
 
-                /*Intent intent = new Intent(getApplicationContext(),NoteEditorActivity.class);
-                startActivity(intent);*/
             }
         });
     }
@@ -126,39 +131,55 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater menuInflater = getMenuInflater();
-        menuInflater.inflate(R.menu.add_note_menu, menu);
+        menuInflater.inflate(R.menu.hlavni_menu, menu);
         return super.onCreateOptionsMenu(menu);
     }
 
     public static void nacteniDatabaze(){
+        try {
+            // Načtení tabulky "rozhodnuti" včetně rowid
+            Cursor c = databazeRozhodnuti.rawQuery("SELECT rowid, * FROM rozhodnuti", null);
 
-        // Načtení tabulky "rozhodnuti" včetně rowid
-        Cursor c = databazeRozhodnuti.rawQuery("SELECT rowid, * FROM rozhodnuti", null);
+            // Nastavení indexů
+            int rowidIndex = c.getColumnIndex("rowid");
+            int nazevIndex = c.getColumnIndex("nazev");
+            int poradiIndex = c.getColumnIndex("poradi");
 
-        // Nastavení indexů
-        int rowidIndex = c.getColumnIndex("rowid");
-        int nazevIndex = c.getColumnIndex("nazev");
-        int poradiIndex = c.getColumnIndex("poradi");
+            // Posunutí ukazatele na první položku
+            c.moveToFirst();
 
-        // Posunutí ukazatele na první položku
-        c.moveToFirst();
+            // Pročištění polí před naplněním
+            notes.clear();
+            poradi.clear();
 
-        // Pročištění polí před naplněním
-        notes.clear();
-        poradi.clear();
+            while (c != null) {
+                // Ukládá jméno do notes
+                notes.add(c.getString(nazevIndex));
 
-        while (c != null){
-            // Ukládá jméno do notes
-            notes.add(c.getString(nazevIndex));
+                // Ukládá číslo záznamu do poradi
+                poradi.add(c.getInt(rowidIndex));
 
-            // Ukládá číslo záznamu do poradi
-            poradi.add(c.getInt(rowidIndex));
+                // Kontroluje, zda již nejsme na konci
+                if (c.moveToNext() == false) break;
 
-            // Kontroluje, zda již nejsme na konci
-            if (c.moveToNext() == false) break;
+                //if(!c.isLast()) c.moveToNext();
+                //else c = null;
+            }
 
-            //if(!c.isLast()) c.moveToNext();
-            //else c = null;
+            c.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public static void vytvoreniDatabazi(){
+        try {
+            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS rozhodnuti (nazev VARCHAR, poradi INT(3))");
+            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS srovnani (idSrov integer primary key, idPol INT(3), idVlast INT(3), vaha INT(3))");
+            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS polozky (nazev VARCHAR, idRoz INT(3))");
+            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS vlastnosti (idVlast integer primary key, nazevVlast VARCHAR, idRoz INT(3), vahaVlast INT(3))");
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 }

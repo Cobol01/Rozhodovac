@@ -1,5 +1,6 @@
 package com.example.cobol.rozhodovac;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -22,7 +23,10 @@ import android.widget.TextView;
 
 public class DetailActivity extends AppCompatActivity {
 
-    static int pokus;
+    static int idRozhodnuti;
+
+    static Context context;
+
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -43,8 +47,10 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        context = getApplicationContext();
+
         Intent intent = getIntent();
-        pokus = intent.getIntExtra("noteId", -1);
+        idRozhodnuti = intent.getIntExtra("noteId", -1);
         setTitle(intent.getStringExtra("nazev"));
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -60,16 +66,6 @@ public class DetailActivity extends AppCompatActivity {
         // Odchytnu si TabLayout a řeknu ať se nastavuje podle mViewPager
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
-
     }
 
 
@@ -115,10 +111,10 @@ public class DetailActivity extends AppCompatActivity {
                     Tab1Activity tab1 = new Tab1Activity();
                     return tab1;
                 case 1:
-                    Tab1Activity tab2 = new Tab1Activity();
+                    Tab2Activity tab2 = new Tab2Activity();
                     return tab2;
                 case 2:
-                    Tab1Activity tab3 = new Tab1Activity();
+                    Tab3Activity tab3 = new Tab3Activity();
                     return tab3;
                 default:
                     return null;
