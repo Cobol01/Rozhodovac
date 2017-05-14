@@ -59,7 +59,7 @@ public class VlastnostDetailActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 } else if(kdo == 2){
-                    MainActivity.databazeRozhodnuti.execSQL("UPDATE srovnani SET vaha = " + seekBar.getProgress() + " WHERE idSrov = " + idVlastnost);
+                    MainActivity.databazeRozhodnuti.execSQL("UPDATE srovnani SET hodnoc = " + seekBar.getProgress() + " WHERE idSrov = " + idVlastnost);
                     PolozkyDetailActivity.nacteniDatabaze();
                     finish();
                 }

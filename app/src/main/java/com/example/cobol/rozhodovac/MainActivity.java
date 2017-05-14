@@ -175,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
     public static void vytvoreniDatabazi(){
         try {
             MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS rozhodnuti (nazev VARCHAR, poradi INT(3))");
-            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS srovnani (idSrov integer primary key, idPol INT(3), idVlast INT(3), vaha INT(3))");
+            MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS srovnani (idSrov integer primary key, idPol INT(3), idVlast INT(3), hodnoc INT(3))");
             MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS polozky (nazev VARCHAR, idRoz INT(3))");
             MainActivity.databazeRozhodnuti.execSQL("CREATE TABLE IF NOT EXISTS vlastnosti (idVlast integer primary key, nazevVlast VARCHAR, idRoz INT(3), vahaVlast INT(3))");
         } catch (Exception e){

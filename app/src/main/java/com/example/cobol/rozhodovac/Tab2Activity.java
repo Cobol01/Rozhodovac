@@ -69,15 +69,19 @@ public class Tab2Activity extends Fragment {
                             // Vkládám vlastnosti do srovnávací tabulky
                             Cursor c = MainActivity.databazeRozhodnuti.rawQuery("SELECT idVlast FROM vlastnosti WHERE idRoz =" + DetailActivity.idRozhodnuti, null);
 
-                            int rowidIndex = c.getColumnIndex("idVlast");
+                            if (c.getCount() != 0) {
 
-                            c.moveToFirst();
+                                int rowidIndex = c.getColumnIndex("idVlast");
 
-                            while (c != null) {
-                                MainActivity.databazeRozhodnuti.execSQL("INSERT INTO srovnani (idPol, idVlast, vaha) VALUES (" + ID + ", " + c.getInt(rowidIndex) + ", 5)");
+                                c.moveToFirst();
 
-                                idVlastnosti.add(c.getString(rowidIndex));
-                                if (c.moveToNext() == false) break;
+                                while (c != null) {
+                                    MainActivity.databazeRozhodnuti.execSQL("INSERT INTO srovnani (idPol, idVlast, hodnoc) VALUES (" + ID + ", " + c.getInt(rowidIndex) + ", 5)");
+
+                                    idVlastnosti.add(c.getString(rowidIndex));
+                                    if (c.moveToNext() == false) break;
+                                }
+
                             }
 
                             editText.setText(null);

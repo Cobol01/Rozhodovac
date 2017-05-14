@@ -67,14 +67,14 @@ public class PolozkyDetailActivity extends AppCompatActivity {
     public static void nacteniDatabaze (){
         try {
             Cursor c = MainActivity.databazeRozhodnuti.rawQuery(
-                    "SELECT nazevVlast, idSrov, vaha, idPol " +
+                    "SELECT nazevVlast, idSrov, hodnoc, idPol " +
                             "FROM srovnani INNER JOIN vlastnosti " +
                             "ON srovnani.idVlast = vlastnosti.idVlast " +
                             "WHERE idPol = " + cisloPolozky, null);
 
             // Nastavení indexů
             int idSrovIndex = c.getColumnIndex("idSrov");
-            int vahaIndex = c.getColumnIndex("vaha");
+            int hodnocIndex = c.getColumnIndex("hodnoc");
             int nazevVlastIndex = c.getColumnIndex("nazevVlast");
 
             // Posunutí ukazatele na první položku
@@ -91,7 +91,7 @@ public class PolozkyDetailActivity extends AppCompatActivity {
 
                 idSrov.add(c.getInt(idSrovIndex));
 
-                vahaVlastnosti.add(c.getInt(vahaIndex));
+                vahaVlastnosti.add(c.getInt(hodnocIndex));
 
                 nazevVlastnosti.add(c.getString(nazevVlastIndex));
 

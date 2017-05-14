@@ -70,14 +70,17 @@ public class Tab3Activity extends Fragment {
                         if (ID != -1) {
                             Cursor c = MainActivity.databazeRozhodnuti.rawQuery("SELECT rowid FROM polozky WHERE idRoz =" + DetailActivity.idRozhodnuti, null);
 
-                            int rowidIndex = c.getColumnIndex("rowid");
+                            if (c.getCount() != 0) {
 
-                            c.moveToFirst();
+                                int rowidIndex = c.getColumnIndex("rowid");
 
-                            while (c != null) {
-                                MainActivity.databazeRozhodnuti.execSQL("INSERT INTO srovnani (idPol, idVlast, vaha) VALUES (" + c.getInt(rowidIndex) + ", " + ID + ", 5)");
+                                c.moveToFirst();
 
-                                if (c.moveToNext() == false) break;
+                                while (c != null) {
+                                    MainActivity.databazeRozhodnuti.execSQL("INSERT INTO srovnani (idPol, idVlast, hodnoc) VALUES (" + c.getInt(rowidIndex) + ", " + ID + ", 5)");
+
+                                    if (c.moveToNext() == false) break;
+                                }
                             }
 
                             Toast.makeText(DetailActivity.context, "Uloženo", Toast.LENGTH_SHORT).show();
@@ -120,8 +123,6 @@ public class Tab3Activity extends Fragment {
             // Načtení tabulky "rozhodnuti" včetně rowid
             Cursor c = MainActivity.databazeRozhodnuti.rawQuery("SELECT idVlast, * FROM vlastnosti WHERE idRoz =" + DetailActivity.idRozhodnuti, null);
 
-            Log.i("1kurzor: ",c.toString());
-
             // Nastavení indexů
             int rowidIndex = c.getColumnIndex("idVlast");
             int nazevIndex = c.getColumnIndex("nazevVlast");
@@ -136,21 +137,30 @@ public class Tab3Activity extends Fragment {
             cisloVlastnosti.clear();
             vahaVlastnosti.clear();
 
-
             while (c != null) {
+
+                Log.i("nazevIndex: ", String.valueOf(c.getCount()));
+                Log.i("vahaIndex: ", String.valueOf(c.getPosition()));
+
                 // Ukládá jméno do vlastnosti
                 vlastnosti.add(c.getString(nazevIndex));
 
                 // Ukládá váhu do vahaVlastnosti
-                vahaVlastnosti.add(Integer.valueOf(c.getString(vahaIndex)));
+                vahaVlastnosti.add(c.getInt(vahaIndex));
 
                 // Ukládá pozici do vahaVlastnosti
-                cisloVlastnosti.add(Integer.valueOf(c.getString(rowidIndex)));
+                cisloVlastnosti.add(c.getInt(rowidIndex));
 
-                if (c.moveToNext() == false) break;
+                if (c.isLast() == true) {
+                    Log.i("jeposledni: ", "");
+                    break;
+                }
+                else c.moveToNext();
             }
 
             arrayAdapter.notifyDataSetChanged();
+
+            Log.i("tady?: ", "");
 
             c.close();
 

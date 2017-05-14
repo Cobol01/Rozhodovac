@@ -55,6 +55,8 @@ public class Tab1Activity extends Fragment  {
                 int idPol = cPol.getInt(idPolIndex);
                 String nazev =  cPol.getString(nazevPolIndex);
 
+                Log.i("baf","");
+
                 /*Cursor c = MainActivity.databazeRozhodnuti.rawQuery(
                         "SELECT nazev, vaha, vahaVlast " +
                                 "FROM polozky " +
@@ -64,14 +66,14 @@ public class Tab1Activity extends Fragment  {
                                 "ON srovnani.idVlast = vlastnosti.idVlast", null);*/
 
                 Cursor c = MainActivity.databazeRozhodnuti.rawQuery(
-                        "SELECT vaha, vahaVlast " +
+                        "SELECT hodnoc, vahaVlast " +
                                 "FROM srovnani " +
                                 "INNER JOIN vlastnosti " +
                                 "ON srovnani.idVlast = vlastnosti.idVlast " +
                                 "WHERE idPol = " + idPol, null);
 
                 // Nastavení indexů
-                int vahaIndex = c.getColumnIndex("vaha");
+                int hodnocIndex = c.getColumnIndex("hodnoc");
                 int vahaVlastIndex = c.getColumnIndex("vahaVlast");
 
                 // Posunutí ukazatele na první položku
@@ -83,10 +85,10 @@ public class Tab1Activity extends Fragment  {
 
                 while (c != null) {
 
-                    int vaha = c.getInt(vahaIndex);
+                    int hodnoc = c.getInt(hodnocIndex);
                     int vahaVlast = c.getInt(vahaVlastIndex);
 
-                    celkem += vaha * vahaVlast;
+                    celkem += hodnoc * vahaVlast;
 
                     Log.i ("celkem: ", String.valueOf(celkem));
 
