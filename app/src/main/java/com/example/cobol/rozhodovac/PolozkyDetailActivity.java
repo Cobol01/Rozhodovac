@@ -29,6 +29,12 @@ public class PolozkyDetailActivity extends AppCompatActivity {
     // Pole pro předání pozice v tabulce
     static ArrayList<Integer> idSrov = new ArrayList<>();
 
+    // VYtvoření zdroje dat pro adapter
+    static ArrayList<Vyhodnoceni> poleVyhodnoceni = new ArrayList<Vyhodnoceni>();
+
+    // Vytvoření adaptéru
+    static MujAdapter adapter = new MujAdapter(DetailActivity.context, poleVyhodnoceni);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,11 +47,14 @@ public class PolozkyDetailActivity extends AppCompatActivity {
         TextView textView = (TextView) findViewById(R.id.nazePolozkyTextView);
         textView.setText(nazevPolozky);
 
-        ListView listView = (ListView) findViewById(R.id.polozkyListView);
+        /*ListView listView = (ListView) findViewById(R.id.polozkyListView);
 
         arrayAdapter = new ArrayAdapter(DetailActivity.context, android.R.layout.simple_list_item_1, nazevVlastnosti);
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(arrayAdapter);*/
+
+        ListView listView = (ListView) findViewById(R.id.polozkyListView);
+        listView.setAdapter(adapter);
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -86,6 +95,7 @@ public class PolozkyDetailActivity extends AppCompatActivity {
             idSrov.clear();
             vahaVlastnosti.clear();
             nazevVlastnosti.clear();
+            adapter.clear();
 
             while (c != null){
 
@@ -95,10 +105,14 @@ public class PolozkyDetailActivity extends AppCompatActivity {
 
                 nazevVlastnosti.add(c.getString(nazevVlastIndex));
 
+                Vyhodnoceni noveVyhodnoceni = new Vyhodnoceni(c.getString(nazevVlastIndex),c.getInt(hodnocIndex));
+
+                adapter.add(noveVyhodnoceni);
+
                 if (c.moveToNext() == false) break;
             }
 
-            arrayAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
             c.close();
             Tab1Activity.nacteniDatabaze();

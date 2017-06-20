@@ -25,6 +25,8 @@ import java.util.ArrayList;
 
 public class Tab2Activity extends Fragment {
 
+    private static final String TAG = "Tab2Activity";
+
     static ArrayAdapter arrayAdapter;
 
     EditText editText;
@@ -40,7 +42,7 @@ public class Tab2Activity extends Fragment {
 
         ListView listView = (ListView) rootView.findViewById(R.id.tab2ListView);
 
-        arrayAdapter = new ArrayAdapter(DetailActivity.context, android.R.layout.simple_list_item_1, polozky);
+        arrayAdapter = new ArrayAdapter(DetailActivity.context, R.layout.item_pol_vlast, polozky);
 
         listView.setAdapter(arrayAdapter);
 
@@ -118,6 +120,8 @@ public class Tab2Activity extends Fragment {
         try {
             // Načtení tabulky "rozhodnuti" včetně rowid
             Cursor c = MainActivity.databazeRozhodnuti.rawQuery("SELECT rowid, * FROM polozky WHERE idRoz =" + DetailActivity.idRozhodnuti, null);
+
+            Log.i(TAG,"Kurzor" + c.toString());
 
             // Nastavení indexů
             int rowidIndex = c.getColumnIndex("rowid");

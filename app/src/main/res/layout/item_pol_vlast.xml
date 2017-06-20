@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentStart="true"
+    android:layout_alignParentTop="true"
+    android:layout_toStartOf="@+id/vyScore"
+    android:paddingBottom="5px"
+    android:paddingLeft="20px"
+    android:paddingTop="5px"
+    android:text="Nazev"
+    android:textColor="@android:color/black"
+    android:textSize="24sp" />

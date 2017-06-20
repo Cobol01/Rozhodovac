@@ -1,9 +1,5 @@
 package com.example.cobol.rozhodovac;
 
-/**
- * Created by Cobol on 30.4.2017.
- */
-
 import android.database.Cursor;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
@@ -20,19 +16,35 @@ import java.util.ArrayList;
 
 public class Tab1Activity extends Fragment  {
 
-    static ArrayAdapter arrayAdapter;
+    private static final String TAG = "Tab1Activity";
+
+    //static ArrayAdapter arrayAdapter;
 
     // Pole pro předání pozice v tabulce
-    static ArrayList<String> vyhodnoceniArray = new ArrayList<>();
+    // static ArrayList<String> vyhodnoceniArray = new ArrayList<>();
+
+    // VYtvoření zdroje dat pro adapter
+    static ArrayList<Vyhodnoceni> poleVyhodnoceni = new ArrayList<Vyhodnoceni>();
+
+    // Vytvoření adaptéru
+    static MujAdapter adapter = new MujAdapter(DetailActivity.context, poleVyhodnoceni);
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tab1, container, false);
 
+        /*
         ListView listView = (ListView) rootView.findViewById(R.id.vyhodnoceniListView);
 
         arrayAdapter = new ArrayAdapter(DetailActivity.context, android.R.layout.simple_list_item_1, vyhodnoceniArray);
 
         listView.setAdapter(arrayAdapter);
+        */
+
+
+        // Přiřazení adapteru k listView
+        ListView listView = (ListView) rootView.findViewById(R.id.vyhodnoceniListView);
+        listView.setAdapter(adapter);
+
 
         nacteniDatabaze();
 
@@ -47,7 +59,9 @@ public class Tab1Activity extends Fragment  {
             int idPolIndex = cPol.getColumnIndex("rowid");
             int nazevPolIndex = cPol.getColumnIndex("nazev");
 
-            vyhodnoceniArray.clear();
+            //vyhodnoceniArray.clear(); //starý arrayAdapter
+
+            adapter.clear();
 
             cPol.moveToFirst();
             while (cPol != null) {
@@ -55,7 +69,7 @@ public class Tab1Activity extends Fragment  {
                 int idPol = cPol.getInt(idPolIndex);
                 String nazev =  cPol.getString(nazevPolIndex);
 
-                Log.i("baf","");
+                Log.i(TAG,"baf");
 
                 /*Cursor c = MainActivity.databazeRozhodnuti.rawQuery(
                         "SELECT nazev, vaha, vahaVlast " +
@@ -90,12 +104,16 @@ public class Tab1Activity extends Fragment  {
 
                     celkem += hodnoc * vahaVlast;
 
-                    Log.i ("celkem: ", String.valueOf(celkem));
+                    Log.i (TAG, "celkem: " + String.valueOf(celkem));
 
                     if (c.moveToNext() == false) break;
                 }
 
-                vyhodnoceniArray.add(nazev + ": " + celkem);
+                Vyhodnoceni noveVyhodnoceni = new Vyhodnoceni(nazev,celkem);
+
+                adapter.add(noveVyhodnoceni);
+
+                //vyhodnoceniArray.add(nazev + ": " + celkem); // starý arrayAdapter
 
                 if (cPol.moveToNext() == false) break;
 
@@ -103,7 +121,9 @@ public class Tab1Activity extends Fragment  {
             }
             cPol.close();
 
-            arrayAdapter.notifyDataSetChanged();
+            //arrayAdapter.notifyDataSetChanged();
+
+            adapter.notifyDataSetChanged();
 
         } catch (Exception e){
             e.printStackTrace();

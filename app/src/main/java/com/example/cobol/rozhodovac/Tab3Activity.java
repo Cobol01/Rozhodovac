@@ -20,6 +20,8 @@ import java.util.ArrayList;
 
 public class Tab3Activity extends Fragment {
 
+    private static final String TAG = "Tab3Activity";
+
     static ArrayAdapter arrayAdapter;
 
     // Pole pro výpis do ViewList
@@ -31,6 +33,12 @@ public class Tab3Activity extends Fragment {
     // Pole pro předání pozice v tabulce
     static ArrayList<Integer> vahaVlastnosti = new ArrayList<>();
 
+    // VYtvoření zdroje dat pro adapter
+    static ArrayList<Vyhodnoceni> poleVyhodnoceni = new ArrayList<Vyhodnoceni>();
+
+    // Vytvoření adaptéru
+    static MujAdapter adapter = new MujAdapter(DetailActivity.context, poleVyhodnoceni);
+
     EditText editText;
 
     static View mRootView;
@@ -38,13 +46,17 @@ public class Tab3Activity extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         final View rootView = inflater.inflate(R.layout.tab3, container, false);
 
+        /*
         ListView listView = (ListView) rootView.findViewById(R.id.tab3ListView);
 
-        arrayAdapter = new ArrayAdapter(DetailActivity.context, android.R.layout.simple_list_item_1, vlastnosti);
+        arrayAdapter = new ArrayAdapter(DetailActivity.context, R.layout.item_pol_vlast, vlastnosti);
 
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(arrayAdapter);*/
 
         mRootView = rootView;
+
+        ListView listView = (ListView) rootView.findViewById(R.id.vlastnostiListView);
+        listView.setAdapter(adapter);
 
         nacteniDatabaze(rootView);
 
@@ -58,6 +70,7 @@ public class Tab3Activity extends Fragment {
 
                 if (!editText.getText().toString().matches("")){
                     try {
+                        Log.i(TAG,"Zacatek vlozeni vlastnosti");
                         ContentValues values = new ContentValues();
                         values.put("nazevVlast", editText.getText().toString());
                         values.put("idRoz", DetailActivity.idRozhodnuti);
@@ -65,10 +78,15 @@ public class Tab3Activity extends Fragment {
                         float ID;
                         ID = MainActivity.databazeRozhodnuti.insert("vlastnosti",null,values);
 
+                        Log.i(TAG,"ID po vlozeni: " + ID);
+
                         /*MainActivity.databazeRozhodnuti.execSQL("INSERT INTO vlastnosti (nazevVlast, idRoz, vahaVlast) VALUES ('" + editText.getText() + "', " + DetailActivity.idRozhodnuti + ", 5)");*/
 
                         if (ID != -1) {
+
                             Cursor c = MainActivity.databazeRozhodnuti.rawQuery("SELECT rowid FROM polozky WHERE idRoz =" + DetailActivity.idRozhodnuti, null);
+
+                            Log.i(TAG,"po nacteni polozek");
 
                             if (c.getCount() != 0) {
 
@@ -137,10 +155,13 @@ public class Tab3Activity extends Fragment {
             cisloVlastnosti.clear();
             vahaVlastnosti.clear();
 
+            adapter.clear();
+
+
             while (c != null) {
 
-                Log.i("nazevIndex: ", String.valueOf(c.getCount()));
-                Log.i("vahaIndex: ", String.valueOf(c.getPosition()));
+                Log.i(TAG, "nazevIndex: " + String.valueOf(c.getCount()));
+                Log.i(TAG,"vahaIndex: " +  String.valueOf(c.getPosition()));
 
                 // Ukládá jméno do vlastnosti
                 vlastnosti.add(c.getString(nazevIndex));
@@ -151,16 +172,20 @@ public class Tab3Activity extends Fragment {
                 // Ukládá pozici do vahaVlastnosti
                 cisloVlastnosti.add(c.getInt(rowidIndex));
 
+                Vyhodnoceni noveVyhodnoceni = new Vyhodnoceni(c.getString(nazevIndex),c.getInt(vahaIndex));
+
+                adapter.add(noveVyhodnoceni);
+
                 if (c.isLast() == true) {
-                    Log.i("jeposledni: ", "");
+                    //Log.i(TAG,"jeposledni");
                     break;
                 }
                 else c.moveToNext();
             }
 
-            arrayAdapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
 
-            Log.i("tady?: ", "");
+            //Log.i(TAG,"");
 
             c.close();
 

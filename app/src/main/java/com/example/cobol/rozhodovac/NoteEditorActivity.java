@@ -16,6 +16,8 @@ import android.widget.Toast;
 
 public class NoteEditorActivity extends AppCompatActivity {
 
+    private static final String TAG = "NoteEditorActivity";
+
     int noteId;
     EditText editText;
 
@@ -33,7 +35,7 @@ public class NoteEditorActivity extends AppCompatActivity {
 
         noteId = intent.getIntExtra("noteId", -1);
 
-        Log.i("muj_noteId: ",String.valueOf(noteId));
+        Log.i(TAG, "muj_noteId: " + String.valueOf(noteId));
 
         if (noteId != -1){
             //editText.setText(MainActivity.notes.get(noteId));

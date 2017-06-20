@@ -53,7 +53,7 @@ public class VlastnostDetailActivity extends AppCompatActivity {
                     try {
                         MainActivity.databazeRozhodnuti.execSQL("UPDATE vlastnosti SET nazevVlast = \"" + editText.getText() + "\" , vahaVlast = " + seekBar.getProgress() + " WHERE idVlast = " + idVlastnost);
                         Tab3Activity.nacteniDatabaze(Tab3Activity.mRootView);
-                        Tab3Activity.arrayAdapter.notifyDataSetChanged();
+                        //Tab3Activity.adapter.notifyDataSetChanged();
                         finish();
                     } catch (Exception e) {
                         e.printStackTrace();
